@@ -39,7 +39,7 @@ public final class ChannelUtils {
                 .findFirst();
     }
 
-    public static boolean isTargetWithinRadius(
+    public static boolean canTargetReceiveMessage(
         @NotNull final User source,
         @NotNull final User target,
         @NotNull List<String> sharedWorlds,

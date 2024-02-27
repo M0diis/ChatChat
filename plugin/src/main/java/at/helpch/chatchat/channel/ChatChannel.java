@@ -65,7 +65,7 @@ public final class ChatChannel extends AbstractChannel {
             return plugin.usersHolder().users().stream()
                 .filter(User::chatEnabled) // Make sure the user has their chat enabled
                 .filter(filterIgnores)
-                .filter(user -> ChannelUtils.isTargetWithinRadius(source, user, worlds(), radius()))
+                .filter(targetUser -> ChannelUtils.canTargetReceiveMessage(source, targetUser, worlds(), radius()))
                 .collect(Collectors.toSet());
         }
 
@@ -73,7 +73,7 @@ public final class ChatChannel extends AbstractChannel {
                 user.hasPermission(ChannelUtils.SEE_CHANNEL_PERMISSION + name()))
             .filter(User::chatEnabled) // Make sure the user has their chat enabled
             .filter(filterIgnores)
-            .filter(user -> ChannelUtils.isTargetWithinRadius(source, user, worlds(), radius()))
+            .filter(targetUser -> ChannelUtils.canTargetReceiveMessage(source, targetUser, worlds(), radius()))
             .collect(Collectors.toSet());
     }
 
