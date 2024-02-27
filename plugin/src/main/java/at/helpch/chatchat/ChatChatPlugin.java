@@ -56,6 +56,12 @@ import java.util.stream.Collectors;
 @BukkitMain
 public final class ChatChatPlugin extends JavaPlugin {
 
+    private static ChatChatPlugin instance;
+
+    public static ChatChatPlugin getInstance() {
+        return instance;
+    }
+
     private @NotNull
     final ConfigManager configManager = new ConfigManager(this, this.getDataFolder().toPath());
     // We can move this inside onLoad or inside onEnable when we add different database types
@@ -76,6 +82,9 @@ public final class ChatChatPlugin extends JavaPlugin {
     private @NotNull
     final ChatChatAPIImpl api = new ChatChatAPIImpl(this);
 
+    public ChatChatPlugin() {
+        instance = this;
+    }
 
     private static BukkitAudiences audiences;
     private BukkitCommandManager<User> commandManager;
@@ -227,7 +236,7 @@ public final class ChatChatPlugin extends JavaPlugin {
                 .filter(sender::canSee)
                 .map(ChatUser::player)
                 .map(Player::getName)
-                .collect(Collectors.toUnmodifiableList())
+                .toList()
         );
         commandManager.registerSuggestion(SuggestionKey.of("files"), (sender, context) -> DumpUtils.FILES);
         commandManager.registerSuggestion(ChatUser.class, ((sender, context) -> Bukkit.getOnlinePlayers().stream()

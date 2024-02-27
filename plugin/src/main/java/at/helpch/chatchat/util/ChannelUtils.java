@@ -39,10 +39,11 @@ public final class ChannelUtils {
     }
 
     public static boolean isTargetWithinRadius(
-            @NotNull final User source,
-            @NotNull final User target,
-            final int radius) {
-        if (!(target instanceof ChatUser)) {
+        @NotNull final User source,
+        @NotNull final User target,
+        @NotNull List<String> sharedWorlds,
+        final int radius) {
+        if (!(target instanceof ChatUser targetChatUser)) {
             return true;
         }
 
@@ -50,9 +51,26 @@ public final class ChannelUtils {
             return true;
         }
 
-        if (radius != -1 && source instanceof ChatUser) {
-            final Location sourceLocation = ((ChatUser) source).player().getLocation();
-            final Location targetLocation = ((ChatUser) target).player().getLocation();
+        final Location targetLocation = targetChatUser.player().getLocation();
+
+        if (radius == -1 && source instanceof ChatUser sourceChatUser) {
+            final Location sourceLocation = sourceChatUser.player().getLocation();
+
+            boolean containsTarget = sharedWorlds.contains(targetLocation.getWorld().getName());
+            boolean containsSource = sharedWorlds.contains(sourceLocation.getWorld().getName());
+            boolean areInTheSameWorld = targetLocation.getWorld().getName().equals(sourceLocation.getWorld().getName());
+            boolean treatAsGlobal = sharedWorlds.isEmpty();
+
+            return treatAsGlobal || areInTheSameWorld || (containsTarget && containsSource);
+        }
+
+        if (radius != -1 && source instanceof ChatUser sourceChatUser) {
+            final Location sourceLocation = sourceChatUser.player().getLocation();
+
+            if (!sourceLocation.getWorld().getName().equals(targetLocation.getWorld().getName())) {
+                return false;
+            }
+
             final int relativeX = targetLocation.getBlockX() - sourceLocation.getBlockX();
             final int relativeZ = targetLocation.getBlockZ() - sourceLocation.getBlockZ();
 

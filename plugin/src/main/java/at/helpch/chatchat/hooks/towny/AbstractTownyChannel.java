@@ -26,8 +26,9 @@ public abstract class AbstractTownyChannel extends AbstractChannel {
                                    @NotNull final List<String> toggleCommands,
                                    @NotNull final String channelPrefix,
                                    @NotNull final FormatsHolder formats,
+                                   @NotNull final List<String> worlds,
                                    final int radius) {
-        super(name, messagePrefix, toggleCommands, channelPrefix, formats, radius);
+        super(name, messagePrefix, toggleCommands, channelPrefix, formats, worlds, radius);
         if (Bukkit.getPluginManager().getPlugin("Towny") == null) {
             throw new RuntimeException("Attempting to use a Towny channel but Towny is not installed.");
         }}
@@ -43,7 +44,7 @@ public abstract class AbstractTownyChannel extends AbstractChannel {
 
     protected abstract @Nullable ResidentList residentList(@NotNull final Resident resident);
 
-    private final ChatChatPlugin plugin = ChatChatPlugin.getPlugin(ChatChatPlugin.class);
+    private final ChatChatPlugin plugin = ChatChatPlugin.getInstance();
 
     @Override
     public Set<User> targets(final @NotNull User source) {
@@ -53,7 +54,7 @@ public abstract class AbstractTownyChannel extends AbstractChannel {
             .map(Resident::getUUID)
             .map(plugin.usersHolder()::getUser)
             .filter(User::chatEnabled) // Make sure the user has their chat enabled
-            .filter(target -> ChannelUtils.isTargetWithinRadius(source, target, radius()))
+            .filter(target -> ChannelUtils.isTargetWithinRadius(source, target, worlds(), radius()))
             .collect(Collectors.toSet())).orElseGet(Set::of);
 
     }

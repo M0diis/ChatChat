@@ -23,6 +23,7 @@ repositories {
     maven("https://jitpack.io")
     // essentialsx
     maven("https://repo.essentialsx.net/releases/")
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
@@ -32,7 +33,7 @@ dependencies {
     implementation(libs.configurate)
     implementation(libs.bstats)
 
-    compileOnly(libs.spigot)
+    compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
     compileOnly(libs.papi)
     compileOnly(libs.towny)
     compileOnly(libs.essentials)
@@ -198,8 +199,7 @@ bukkit {
 
 tasks {
     withType<ShadowJar> {
-        listOf("net.kyori",
-            "dev.triumphteam",
+        listOf("dev.triumphteam",
             "org.spongepowered",
             "io.leangen",
             "org.yaml",

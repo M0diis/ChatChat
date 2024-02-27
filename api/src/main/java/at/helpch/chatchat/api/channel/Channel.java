@@ -58,6 +58,13 @@ public interface Channel {
     int radius();
 
     /**
+     * Get a list of worlds that share the same channel. All worlds are included by default.
+     *
+     * @return The commands that can be used to switch to this channel.
+     */
+    @NotNull List<String> worlds();
+
+    /**
      * Get a set of {@link ChatUser}s that can see this channel.
      *
      * @param source The {@link User} that is requesting the list.
@@ -72,4 +79,9 @@ public interface Channel {
      * @return The {@link ChatUser}s that can send messages in this channel.
      */
     boolean isUsableBy(@NotNull final ChatUser user);
+
+
+
+
+
 }

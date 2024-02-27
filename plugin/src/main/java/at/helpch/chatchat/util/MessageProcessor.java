@@ -131,9 +131,7 @@ public final class MessageProcessor {
                 true
             );
 
-            if (target instanceof ChatUser) {
-                final var chatTarget = (ChatUser) target;
-
+            if (target instanceof final ChatUser chatTarget) {
                 final var component = FormatUtils.parseFormat(
                     chatEvent.format(),
                     user.player(),
@@ -239,9 +237,10 @@ public final class MessageProcessor {
 
         resolver.resolvers(plugin.miniPlaceholdersManager().compileTags(MiniPlaceholderContext.builder().inMessage(true).sender(user).recipient(recipient).build()));
 
-        return !user.hasPermission(URL_PERMISSION)
-            ? USER_MESSAGE_MINI_MESSAGE.deserialize(message, resolver.build())
-            : USER_MESSAGE_MINI_MESSAGE.deserialize(message, resolver.build()).replaceText(URL_REPLACER_CONFIG);
-    }
+        var kyorified = Kyorifier.kyorify(message);
 
+        return !user.hasPermission(URL_PERMISSION)
+            ? USER_MESSAGE_MINI_MESSAGE.deserialize(kyorified, resolver.build())
+            : USER_MESSAGE_MINI_MESSAGE.deserialize(kyorified, resolver.build()).replaceText(URL_REPLACER_CONFIG);
+    }
 }

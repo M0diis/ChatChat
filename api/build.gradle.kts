@@ -9,6 +9,8 @@ plugins {
 repositories {
     // adventure snapshot repo
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
@@ -16,13 +18,12 @@ dependencies {
     api(libs.adventure.minimessage)
     api(libs.adventure.configurate)
 
-    compileOnly(libs.spigot)
+    compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
 }
 
 tasks {
     withType<ShadowJar> {
         listOf(
-            "net.kyori",
             "io.leangen",
         ).forEach { relocate(it, "at.helpch.chatchat.libs.$it") }
 

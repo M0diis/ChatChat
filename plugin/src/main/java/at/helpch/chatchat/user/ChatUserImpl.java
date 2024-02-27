@@ -10,7 +10,6 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -152,13 +151,11 @@ public final class ChatUserImpl implements ChatUser {
 
     @Override
     public boolean canSee(@NotNull final User target) {
-        if (!(target instanceof ChatUser)) {
+        if (!(target instanceof final ChatUser chatUser)) {
             return true;
         }
 
-        final var chatUser = (ChatUser) target;
-
-        final var plugin = JavaPlugin.getPlugin(ChatChatPlugin.class);
+        final var plugin = ChatChatPlugin.getInstance();
 
         return plugin.hookManager()
             .vanishHooks()
