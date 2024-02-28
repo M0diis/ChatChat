@@ -48,7 +48,7 @@ public final class ChannelUtils {
             return true;
         }
 
-        if (target.hasPermission(BYPASS_RADIUS_CHANNEL_PERMISSION)) {
+        if (target.hasPermission(BYPASS_RADIUS_CHANNEL_PERMISSION) && !targetChatUser.rangedChat()) {
             return true;
         }
 
