@@ -81,6 +81,9 @@ public class ChatUserSerializer implements JsonSerializer<ChatUser>, JsonDeseria
         // default value is true
         final var chatEnabled = !jsonObject.has("chat-enabled") || jsonObject.get("chat-enabled").getAsBoolean();
 
+        // default value is true
+        final var rangedChatEnabled = !jsonObject.has("ranged-chat-enabled") || jsonObject.get("ranged-chat-enabled").getAsBoolean();
+
         // default value is empty set
         final var ignoredUsers = new HashSet<UUID>();
         if (jsonObject.has("ignored-users")) {
@@ -108,6 +111,7 @@ public class ChatUserSerializer implements JsonSerializer<ChatUser>, JsonDeseria
         user.channelMentions(channelMentions);
         user.socialSpy(socialSpy);
         user.chatState(chatEnabled);
+        user.rangedChat(rangedChatEnabled);
         user.ignoredUsers(ignoredUsers);
 
         return user;

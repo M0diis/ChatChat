@@ -101,7 +101,14 @@ public final class ChatListener implements Listener {
 
         // Cancel the event if the message doesn't end up being sent
         // This only happens if the message contains illegal characters or if the ChatChatEvent is canceled.
-        event.setCancelled(!MessageProcessor.process(plugin, user, channel, message, event.isAsynchronous()));
+        try {
+            event.setCancelled(!MessageProcessor.process(plugin, user, channel, message, event.isAsynchronous()));
+        } catch (Exception e) {
+            plugin.getLogger().severe("An error occurred while processing a message from " + player.getName() + ":");
+            plugin.getLogger().severe("Message: " + event.getMessage());
+            e.printStackTrace();
+            user.channel(oldChannel);
+        }
         user.channel(oldChannel);
     }
 
