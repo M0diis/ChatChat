@@ -202,6 +202,8 @@ public final class MessageProcessor {
             plugin.miniPlaceholdersManager().compileTags(MiniPlaceholderContext.builder().inMessage(false).sender(user).recipient(user).build())
         );
 
+        user.channelMessage(channel, message, component);
+
         user.sendMessage(component);
         if (mentionResult.playSound()) {
             user.playSound(mentions.sound());

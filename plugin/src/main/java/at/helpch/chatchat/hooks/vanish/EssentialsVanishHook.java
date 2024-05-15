@@ -45,6 +45,10 @@ public class EssentialsVanishHook extends AbstractInternalVanishHook {
 
     @Override
     public boolean canSee(@NotNull final ChatUser user, @NotNull final ChatUser target) {
+        if(user.player() == null || target.player() == null) {
+            return false;
+        }
+
         return user.player().canSee(target.player());
     }
 }

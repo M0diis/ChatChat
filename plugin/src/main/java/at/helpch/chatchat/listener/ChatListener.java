@@ -1,12 +1,14 @@
 package at.helpch.chatchat.listener;
 
 import at.helpch.chatchat.ChatChatPlugin;
+import at.helpch.chatchat.api.channel.Channel;
 import at.helpch.chatchat.api.user.ChatUser;
-import at.helpch.chatchat.user.ConsoleUser;
 import at.helpch.chatchat.channel.ChatChannel;
+import at.helpch.chatchat.user.ConsoleUser;
 import at.helpch.chatchat.util.ChannelUtils;
 import at.helpch.chatchat.util.FormatUtils;
 import at.helpch.chatchat.util.MessageProcessor;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,7 +16,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.UnknownFormatConversionException;
 import java.util.regex.Pattern;
 
@@ -27,6 +32,8 @@ public final class ChatListener implements Listener {
     public ChatListener(@NotNull final ChatChatPlugin plugin) {
         this.plugin = plugin;
     }
+
+    private final Map<UUID, String> pendingToConfirm = new HashMap<>();
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onChat(final AsyncPlayerChatEvent event) {
@@ -42,6 +49,12 @@ public final class ChatListener implements Listener {
         final var player = event.getPlayer();
         final var user = (ChatUser) plugin.usersHolder().getUser(player);
 
+        Channel currentChannel = user.channel();
+
+        if (currentChannel.name().equalsIgnoreCase("shout")) {
+            user.channel(ChatChannel.defaultChannel());
+        }
+
         if (!user.chatEnabled()) {
             event.setCancelled(true);
             user.sendMessage(plugin.configManager().messages().chatDisabled());
@@ -56,6 +69,12 @@ public final class ChatListener implements Listener {
         final var message = channelByPrefix.isEmpty() || !channelByPrefix.get().isUsableBy(user)
             ? event.getMessage()
             : event.getMessage().replaceFirst(Pattern.quote(channelByPrefix.get().messagePrefix()), "");
+
+        if (message.isEmpty() || message.trim().isEmpty()) {
+            event.setCancelled(true);
+            user.sendMessage(plugin.configManager().messages().messageEmpty());
+            return;
+        }
 
         var channel = channelByPrefix.isEmpty() || !channelByPrefix.get().isUsableBy(user)
             ? user.channel()
@@ -78,9 +97,47 @@ public final class ChatListener implements Listener {
         // We switch the user to the channel here so that the console can parse the correct channel prefix
         user.channel(channel);
 
-        event.setMessage(LegacyComponentSerializer.legacySection().serialize(
-            MessageProcessor.processMessage(plugin, user, ConsoleUser.INSTANCE, message)
-        ));
+        Component processedMessage = MessageProcessor.processMessage(plugin, user, ConsoleUser.INSTANCE, message);
+
+        if (channel.name().equalsIgnoreCase("shout")) {
+            if (pendingToConfirm.containsKey(player.getUniqueId())) {
+                String current = pendingToConfirm.get(player.getUniqueId());
+
+                if (current.equalsIgnoreCase(message)) {
+                    pendingToConfirm.remove(player.getUniqueId());
+                } else {
+                    pendingToConfirm.put(player.getUniqueId(), message);
+                    user.sendMessage(plugin.configManager().messages().repeatToConfirm()
+                        .replaceText(builder -> builder.matchLiteral("<message>").replacement(processedMessage)));
+                    event.setCancelled(true);
+                    return;
+                }
+            } else {
+                String stored = pendingToConfirm.get(player.getUniqueId());
+
+                Component repeatResponse = plugin.configManager().messages().repeatToConfirm();
+                if(stored == null) {
+                    pendingToConfirm.put(player.getUniqueId(), message);
+
+                    repeatResponse = repeatResponse.replaceText(builder -> builder.matchLiteral("<message>").replacement(processedMessage));
+                    user.sendMessage(repeatResponse);
+                    event.setCancelled(true);
+                    return;
+                }
+
+                if(stored.equalsIgnoreCase(message)) {
+                    pendingToConfirm.remove(player.getUniqueId());
+                } else {
+                    pendingToConfirm.put(player.getUniqueId(), message);
+                    repeatResponse = repeatResponse.replaceText(builder -> builder.matchLiteral("<message>").replacement(processedMessage));
+                    user.sendMessage(repeatResponse);
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+
+        event.setMessage(LegacyComponentSerializer.legacySection().serialize(processedMessage));
 
         try {
             event.setFormat(LegacyComponentSerializer.legacySection().serialize(

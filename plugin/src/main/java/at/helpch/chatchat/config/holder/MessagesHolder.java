@@ -20,6 +20,8 @@ public final class MessagesHolder {
     private Component playersOnly = text("Only players can do this!", RED);
     private Component userOffline = text("The user is not online!", RED);
     private Component userNotInTown = text("You are not in a town!", RED);
+    private Component userJoin = text("<player> has joined the server.", GREEN);
+    private Component userLeave = text("<player> has left the server.", RED);
 
     // messaging related
     private Component noReplies = text("You have no one to reply to!", RED);
@@ -49,6 +51,8 @@ public final class MessagesHolder {
     private Component chatDisabledSuccessfully = text("Your chat has been disabled successfully!", RED);
     private Component chatDisabled = text("Your chat is disabled! You can not send or receive messages until you enable it.", RED);
 
+    private Component messageEmpty = text("You can't send an empty message!", RED);
+
     // channel related
     private Component channelNoPermission = text("You do not have permission to use this channel", RED);
     private Component channelNoPermissionSwitch = text("You no longer have permission to use this channel so it has been switched to the <default> channel. ", RED);
@@ -56,6 +60,8 @@ public final class MessagesHolder {
 
     private Component rangedChatEnabledSuccessfully = text("Your ranged chat has been enabled successfully!", GREEN);
     private Component rangedChatDisabledSuccessfully = text("Your ranged chat has been disabled successfully!", RED);
+
+    private Component repeatToConfirm = text("Please repeat the message to confirm.", RED);
 
     // command related
     private Component commandUnknownCommand = text("Unknown Command.", RED);
@@ -236,6 +242,10 @@ public final class MessagesHolder {
         return chatDisabledSuccessfully;
     }
 
+    public @NotNull Component messageEmpty() {
+        return messageEmpty;
+    }
+
     public @NotNull Component rangedChatEnabledSuccessfully() {
         return rangedChatEnabledSuccessfully;
     }
@@ -248,4 +258,15 @@ public final class MessagesHolder {
         return chatDisabled;
     }
 
+    public @NotNull Component userLeave() {
+        return userLeave;
+    }
+
+    public @NotNull Component userJoin() {
+        return userJoin;
+    }
+
+    public @NotNull Component repeatToConfirm() {
+        return repeatToConfirm;
+    }
 }

@@ -1,9 +1,13 @@
 package at.helpch.chatchat.api.user;
 
+import at.helpch.chatchat.api.channel.Channel;
+import at.helpch.chatchat.api.channel.IChannelMessage;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -16,7 +20,7 @@ public interface ChatUser extends User {
      *
      * @return The player that this user is backed by.
      */
-    @NotNull Player player();
+    @Nullable Player player();
 
     /**
      * Gets the user that this user has last sent a private message to.
@@ -106,4 +110,8 @@ public interface ChatUser extends User {
      * @param enable True to enable ranged chat, false to disable.
      */
     void rangedChat(final boolean enable);
+
+    void channelMessage(final Channel channel, final String message, Component component);
+
+    Map<Channel, IChannelMessage> channelMessages();
 }

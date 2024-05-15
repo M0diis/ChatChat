@@ -2,18 +2,23 @@ package at.helpch.chatchat.user;
 
 import at.helpch.chatchat.ChatChatPlugin;
 import at.helpch.chatchat.api.channel.Channel;
+import at.helpch.chatchat.api.channel.IChannelMessage;
 import at.helpch.chatchat.api.format.Format;
 import at.helpch.chatchat.api.user.ChatUser;
 import at.helpch.chatchat.api.user.User;
 import at.helpch.chatchat.cache.ExpiringCache;
+import at.helpch.chatchat.channel.ChannelMessage;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -40,6 +45,8 @@ public final class ChatUserImpl implements ChatUser {
     private boolean rangedChat = false;
     private boolean chatEnabled = true;
     private Set<UUID> ignoredUsers = new HashSet<>();
+
+    private final Map<Channel, IChannelMessage> lastChannelMessages = new HashMap<>();
 
     @Override
     public @NotNull Channel channel() {
@@ -131,6 +138,16 @@ public final class ChatUserImpl implements ChatUser {
     }
 
     @Override
+    public void channelMessage(Channel channel, String message, Component component) {
+        lastChannelMessages.put(channel, new ChannelMessage(channel, message, component, System.currentTimeMillis()));
+    }
+
+    @Override
+    public @NotNull Map<Channel, IChannelMessage> channelMessages() {
+        return lastChannelMessages;
+    }
+
+    @Override
     public @NotNull Set<UUID> ignoredUsers() {
         return ignoredUsers;
     }
@@ -176,8 +193,8 @@ public final class ChatUserImpl implements ChatUser {
     }
 
     @Override
-    public @NotNull Player player() {
-        return Objects.requireNonNull(Bukkit.getPlayer(uuid)); // this will never be null
+    public @Nullable Player player() {
+        return Bukkit.getPlayer(uuid);
     }
 
     @Override
@@ -193,10 +210,11 @@ public final class ChatUserImpl implements ChatUser {
     @Override
     public String toString() {
         return "ChatUserImpl{" +
-                "uuid=" + uuid +
-                ", lastMessaged=" + lastMessagedUser().map(ChatUser::uuid) +
-                ", channel=" + channel +
-                ", format=" + format +
-                '}';
+            "uuid=" + uuid +
+            ", lastMessaged=" + lastMessagedUser().map(ChatUser::uuid) +
+            ", channel=" + channel +
+            ", format=" + format +
+            '}';
     }
+
 }

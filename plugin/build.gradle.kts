@@ -24,6 +24,11 @@ repositories {
     // essentialsx
     maven("https://repo.essentialsx.net/releases/")
     maven("https://repo.papermc.io/repository/maven-public/")
+
+    flatDir {
+        name = "libs.dir"
+        dirs = setOf(file("libs"))
+    }
 }
 
 dependencies {
@@ -40,6 +45,8 @@ dependencies {
     compileOnly(libs.discordsrv)
     compileOnly(libs.supervanish)
     compileOnly(libs.griefprevention)
+
+    compileOnly(files("${rootDir}/libs/Authenticator.jar"))
 }
 
 bukkit {
@@ -192,6 +199,14 @@ bukkit {
         }
         permission("chatchat.tag.italic") {
             description = "Use the <italic> tags in chat"
+            default = "op"
+        }
+        permission("chatchat.joinmessage") {
+            description = "Player with this permission will notify the server when joining"
+            default = "op"
+        }
+        permission("chatchat.leavemessage") {
+            description = "Player with this permission will notify the server when leaving"
             default = "op"
         }
     }
