@@ -1,6 +1,7 @@
 package at.helpch.chatchat.data.impl.gson;
 
 import at.helpch.chatchat.ChatChatPlugin;
+import at.helpch.chatchat.api.channel.Channel;
 import at.helpch.chatchat.api.user.ChatUser;
 import at.helpch.chatchat.channel.ChatChannel;
 import at.helpch.chatchat.user.ChatUserImpl;

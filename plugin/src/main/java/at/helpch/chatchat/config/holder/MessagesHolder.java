@@ -269,4 +269,8 @@ public final class MessagesHolder {
     public @NotNull Component repeatToConfirm() {
         return repeatToConfirm;
     }
+
+    public @NotNull Component channelsList() {
+        return text("You can chat in following channels: <channels>", YELLOW);
+    }
 }

@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -114,4 +115,13 @@ public interface ChatUser extends User {
     void channelMessage(final Channel channel, final String message, Component component);
 
     Map<Channel, IChannelMessage> channelMessages();
+
+    void addHiddenChannel(Channel channel);
+
+    void removeHiddenChannel(Channel channel);
+
+    Collection<Channel> hiddenChannels();
+
+    void hiddenChannels(Collection<Channel> channels);
+
 }

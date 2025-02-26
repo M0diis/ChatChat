@@ -6,6 +6,7 @@ import at.helpch.chatchat.api.format.PriorityFormat;
 import at.helpch.chatchat.api.user.ChatUser;
 import at.helpch.chatchat.api.user.User;
 import at.helpch.chatchat.channel.ChannelTypeRegistryImpl;
+import at.helpch.chatchat.command.ChannelCommand;
 import at.helpch.chatchat.command.ChatToggleCommand;
 import at.helpch.chatchat.command.DumpCommand;
 import at.helpch.chatchat.command.FormatTestCommand;
@@ -285,7 +286,8 @@ public final class ChatChatPlugin extends JavaPlugin {
             new FormatTestCommand(this),
             new DumpCommand(this),
             new ChatToggleCommand(this),
-            new RangedCommand(this)
+            new RangedCommand(this),
+            new ChannelCommand(this)
         ).forEach(commandManager::registerCommand);
 
         if (configManager.settings().privateMessagesSettings().enabled()) {

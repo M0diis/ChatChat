@@ -10,6 +10,7 @@ import at.helpch.chatchat.user.ConsoleUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -116,6 +117,13 @@ public final class MessageProcessor {
         final var oldChannel = user.channel();
         user.channel(channel);
 
+        if(user.hiddenChannels().contains(channel)) {
+            user.removeHiddenChannel(channel);
+            user.sendMessage(Component.text("You have been automatically added to the channel ", NamedTextColor.GREEN)
+                .append(Component.text(channel.name(), NamedTextColor.DARK_GREEN))
+                .append(Component.text(", because you sent a message to it.", NamedTextColor.GREEN)));
+        }
+
         final var parsedMessage = chatEvent.message().compact();
         final var mentions = plugin.configManager().settings().mentions();
 
@@ -142,6 +150,10 @@ public final class MessageProcessor {
             );
 
             if (target instanceof final ChatUser chatTarget) {
+                if(chatTarget.hiddenChannels().contains(channel)) {
+                    continue;
+                }
+
                 final var component = FormatUtils.parseFormat(
                     chatEvent.format(),
                     user.player(),

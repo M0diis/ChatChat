@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -45,6 +46,7 @@ public final class ChatUserImpl implements ChatUser {
     private boolean rangedChat = false;
     private boolean chatEnabled = true;
     private Set<UUID> ignoredUsers = new HashSet<>();
+    private Set<Channel> channels = new HashSet<>();
 
     private final Map<Channel, IChannelMessage> lastChannelMessages = new HashMap<>();
 
@@ -145,6 +147,26 @@ public final class ChatUserImpl implements ChatUser {
     @Override
     public @NotNull Map<Channel, IChannelMessage> channelMessages() {
         return lastChannelMessages;
+    }
+
+    @Override
+    public void addHiddenChannel(Channel channel) {
+        channels.add(channel);
+    }
+
+    @Override
+    public void removeHiddenChannel(Channel channel) {
+        channels.remove(channel);
+    }
+
+    @Override
+    public Collection<Channel> hiddenChannels() {
+        return channels;
+    }
+
+    @Override
+    public void hiddenChannels(Collection<Channel> channels) {
+        this.channels = new HashSet<>(channels);
     }
 
     @Override
