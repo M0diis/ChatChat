@@ -2,19 +2,24 @@ package at.helpch.chatchat.user;
 
 import at.helpch.chatchat.ChatChatPlugin;
 import at.helpch.chatchat.api.channel.Channel;
+import at.helpch.chatchat.api.channel.IChannelMessage;
 import at.helpch.chatchat.api.format.Format;
 import at.helpch.chatchat.api.user.ChatUser;
 import at.helpch.chatchat.api.user.User;
 import at.helpch.chatchat.cache.ExpiringCache;
+import at.helpch.chatchat.channel.ChannelMessage;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -38,8 +43,12 @@ public final class ChatUserImpl implements ChatUser {
     private boolean personalMentions = true;
     private boolean channelMentions = true;
     private boolean socialSpy = false;
+    private boolean rangedChat = false;
     private boolean chatEnabled = true;
     private Set<UUID> ignoredUsers = new HashSet<>();
+    private Set<Channel> channels = new HashSet<>();
+
+    private final Map<Channel, IChannelMessage> lastChannelMessages = new HashMap<>();
 
     @Override
     public @NotNull Channel channel() {
@@ -121,6 +130,46 @@ public final class ChatUserImpl implements ChatUser {
     }
 
     @Override
+    public boolean rangedChat() {
+        return rangedChat;
+    }
+
+    @Override
+    public void rangedChat(final boolean enabled) {
+        rangedChat = enabled;
+    }
+
+    @Override
+    public void channelMessage(Channel channel, String message, Component component) {
+        lastChannelMessages.put(channel, new ChannelMessage(channel, message, component, System.currentTimeMillis()));
+    }
+
+    @Override
+    public @NotNull Map<Channel, IChannelMessage> channelMessages() {
+        return lastChannelMessages;
+    }
+
+    @Override
+    public void addHiddenChannel(Channel channel) {
+        channels.add(channel);
+    }
+
+    @Override
+    public void removeHiddenChannel(Channel channel) {
+        channels.remove(channel);
+    }
+
+    @Override
+    public Collection<Channel> hiddenChannels() {
+        return channels;
+    }
+
+    @Override
+    public void hiddenChannels(Collection<Channel> channels) {
+        this.channels = new HashSet<>(channels);
+    }
+
+    @Override
     public @NotNull Set<UUID> ignoredUsers() {
         return ignoredUsers;
     }
@@ -152,13 +201,11 @@ public final class ChatUserImpl implements ChatUser {
 
     @Override
     public boolean canSee(@NotNull final User target) {
-        if (!(target instanceof ChatUser)) {
+        if (!(target instanceof final ChatUser chatUser)) {
             return true;
         }
 
-        final var chatUser = (ChatUser) target;
-
-        final var plugin = JavaPlugin.getPlugin(ChatChatPlugin.class);
+        final var plugin = ChatChatPlugin.getInstance();
 
         return plugin.hookManager()
             .vanishHooks()
@@ -168,8 +215,8 @@ public final class ChatUserImpl implements ChatUser {
     }
 
     @Override
-    public @NotNull Player player() {
-        return Objects.requireNonNull(Bukkit.getPlayer(uuid)); // this will never be null
+    public @Nullable Player player() {
+        return Bukkit.getPlayer(uuid);
     }
 
     @Override
@@ -185,10 +232,11 @@ public final class ChatUserImpl implements ChatUser {
     @Override
     public String toString() {
         return "ChatUserImpl{" +
-                "uuid=" + uuid +
-                ", lastMessaged=" + lastMessagedUser().map(ChatUser::uuid) +
-                ", channel=" + channel +
-                ", format=" + format +
-                '}';
+            "uuid=" + uuid +
+            ", lastMessaged=" + lastMessagedUser().map(ChatUser::uuid) +
+            ", channel=" + channel +
+            ", format=" + format +
+            '}';
     }
+
 }

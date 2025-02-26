@@ -11,12 +11,13 @@ import java.util.List;
 public final class TownyNationChannel extends AbstractTownyChannel {
 
     public TownyNationChannel(@NotNull final String name,
-                            @NotNull final String messagePrefix,
-                            @NotNull final List<String> toggleCommands,
-                            @NotNull final String channelPrefix,
-                            @NotNull final FormatsHolder formats,
-                            final int radius) {
-        super(name, messagePrefix, toggleCommands, channelPrefix, formats, radius);
+                              @NotNull final String messagePrefix,
+                              @NotNull final List<String> toggleCommands,
+                              @NotNull final String channelPrefix,
+                              @NotNull final FormatsHolder formats,
+                              @NotNull final List<String> worlds,
+                              final int radius) {
+        super(name, messagePrefix, toggleCommands, channelPrefix, formats, worlds, radius);
     }
 
     @Override

@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 @ConfigSerializable
 public final class ChatChannel extends AbstractChannel {
 
+    private static final ChatChatPlugin plugin = ChatChatPlugin.getInstance();
+
     private static Channel defaultChannel = DefaultConfigObjects.createDefaultChannel();
 
     public ChatChannel(
@@ -27,9 +29,10 @@ public final class ChatChannel extends AbstractChannel {
         @NotNull final List<String> toggleCommands,
         @NotNull final String channelPrefix,
         @NotNull final FormatsHolder formats,
+        @NotNull final List<String> worlds,
         final int radius
     ) {
-        super(name, messagePrefix, toggleCommands, channelPrefix, formats, radius);
+        super(name, messagePrefix, toggleCommands, channelPrefix, formats, worlds, radius);
     }
 
     public static @NotNull Channel defaultChannel() {
@@ -40,8 +43,6 @@ public final class ChatChannel extends AbstractChannel {
         defaultChannel = toSet;
     }
 
-    private final ChatChatPlugin plugin = ChatChatPlugin.getPlugin(ChatChatPlugin.class);
-
     @Override
     public String toString() {
         return "ChatChannel{" +
@@ -50,6 +51,7 @@ public final class ChatChannel extends AbstractChannel {
             ", toggleCommands='" + commandNames() + '\'' +
             ", channelPrefix='" + channelPrefix() + '\'' +
             ", radius='" + radius() +
+            ", worlds='" + worlds() +
             '}';
     }
 
@@ -63,7 +65,7 @@ public final class ChatChannel extends AbstractChannel {
             return plugin.usersHolder().users().stream()
                 .filter(User::chatEnabled) // Make sure the user has their chat enabled
                 .filter(filterIgnores)
-                .filter(user -> ChannelUtils.isTargetWithinRadius(source, user, radius()))
+                .filter(targetUser -> ChannelUtils.canTargetReceiveMessage(source, targetUser, worlds(), radius()))
                 .collect(Collectors.toSet());
         }
 
@@ -71,7 +73,7 @@ public final class ChatChannel extends AbstractChannel {
                 user.hasPermission(ChannelUtils.SEE_CHANNEL_PERMISSION + name()))
             .filter(User::chatEnabled) // Make sure the user has their chat enabled
             .filter(filterIgnores)
-            .filter(user -> ChannelUtils.isTargetWithinRadius(source, user, radius()))
+            .filter(targetUser -> ChannelUtils.canTargetReceiveMessage(source, targetUser, worlds(), radius()))
             .collect(Collectors.toSet());
     }
 

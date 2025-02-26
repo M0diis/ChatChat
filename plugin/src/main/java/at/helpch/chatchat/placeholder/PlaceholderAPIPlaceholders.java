@@ -40,6 +40,7 @@ public final class PlaceholderAPIPlaceholders extends PlaceholderExpansion {
             "%chatchat_channel_prefix%",
             "%chatchat_channel_message_prefix%",
             "%chatchat_social_spy_enabled%",
+            "%chatchat_ranged_chat_enabled%",
             "%chatchat_private_messages_enabled%",
             "%chatchat_private_messages_recipient%"
         );
@@ -64,31 +65,31 @@ public final class PlaceholderAPIPlaceholders extends PlaceholderExpansion {
                 : offlinePlayer.getUniqueId()
         );
 
-        switch(parsedInput) {
-            case "channel_name":
+        switch (parsedInput) {
+            case "channel_name" -> {
                 return user.channel().name();
-            case "channel_prefix":
+            }
+            case "channel_prefix" -> {
                 return user.channel().channelPrefix();
-            case "channel_message_prefix":
+            }
+            case "channel_message_prefix" -> {
                 return user.channel().messagePrefix();
+            }
         }
 
-        if (!(user instanceof ChatUser)) {
+        if (!(user instanceof final ChatUser chatUser)) {
             return null;
         }
 
-        final var chatUser = (ChatUser) user;
+        return switch (parsedInput) {
+            case "social_spy_enabled" -> formatBoolean(chatUser.socialSpy());
+            case "ranged_chat_enabled" -> formatBoolean(chatUser.rangedChat());
+            case "private_messages_enabled" -> formatBoolean(chatUser.privateMessages());
+            case "private_messages_recipient" ->
+                chatUser.lastMessagedUser().map(value -> value.player().getName()).orElse("");
+            default -> null;
+        };
 
-        switch(parsedInput) {
-            case "social_spy_enabled":
-                return formatBoolean(chatUser.socialSpy());
-            case "private_messages_enabled":
-                return formatBoolean(chatUser.privateMessages());
-            case "private_messages_recipient":
-                return chatUser.lastMessagedUser().map(value -> value.player().getName()).orElse("");
-        }
-
-        return null;
     }
 
 

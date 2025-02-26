@@ -1,9 +1,14 @@
 package at.helpch.chatchat.api.user;
 
+import at.helpch.chatchat.api.channel.Channel;
+import at.helpch.chatchat.api.channel.IChannelMessage;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -16,7 +21,7 @@ public interface ChatUser extends User {
      *
      * @return The player that this user is backed by.
      */
-    @NotNull Player player();
+    @Nullable Player player();
 
     /**
      * Gets the user that this user has last sent a private message to.
@@ -90,4 +95,33 @@ public interface ChatUser extends User {
      * @param enable True to enable social spy, false to disable.
      */
     void socialSpy(final boolean enable);
+
+    /**
+     * Checks if the user has ranged chat enabled.
+     * If it is enabled, they will only see messages from players within a certain range.
+     * Only applies to the players that have bypass ChannelUtils.BYPASS_RADIUS_CHANNEL_PERMISSION.
+     *
+     * @return True if the user has ranged chat enabled, false otherwise.
+     */
+    boolean rangedChat();
+
+    /**
+     * Changes the state of the user's ranged chat.
+     *
+     * @param enable True to enable ranged chat, false to disable.
+     */
+    void rangedChat(final boolean enable);
+
+    void channelMessage(final Channel channel, final String message, Component component);
+
+    Map<Channel, IChannelMessage> channelMessages();
+
+    void addHiddenChannel(Channel channel);
+
+    void removeHiddenChannel(Channel channel);
+
+    Collection<Channel> hiddenChannels();
+
+    void hiddenChannels(Collection<Channel> channels);
+
 }

@@ -35,6 +35,7 @@ public final class HookManagerImpl implements HookManager {
         constructors.add(hookCreator::essentialsVanishHook);
         constructors.add(hookCreator::superVanishHook);
         constructors.add(hookCreator::griefPreventionSoftMuteHook);
+        constructors.add(hookCreator::griefPreventionSoftMuteHook);
     }
 
     public void init() {

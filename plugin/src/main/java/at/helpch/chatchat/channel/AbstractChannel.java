@@ -20,6 +20,8 @@ public abstract class AbstractChannel implements Channel {
 
     private final FormatsHolder formats;
 
+    private final List<String> worlds;
+
     private final int radius;
 
     protected AbstractChannel(
@@ -28,6 +30,7 @@ public abstract class AbstractChannel implements Channel {
         @NotNull final List<String> toggleCommands,
         @NotNull final String channelPrefix,
         @NotNull final FormatsHolder formats,
+        @NotNull final List<String> worlds,
         final int radius
     ) {
         this.name = name;
@@ -35,6 +38,7 @@ public abstract class AbstractChannel implements Channel {
         this.toggleCommands = toggleCommands;
         this.channelPrefix = channelPrefix;
         this.formats = formats;
+        this.worlds = worlds;
         this.radius = radius;
     }
 
@@ -69,6 +73,11 @@ public abstract class AbstractChannel implements Channel {
     }
 
     @Override
+    public @NotNull List<String> worlds() {
+        return worlds;
+    }
+
+    @Override
     public boolean isUsableBy(@NotNull final ChatUser user) {
         if (ChatChannel.defaultChannel().equals(this)) {
             return true;
@@ -86,6 +95,7 @@ public abstract class AbstractChannel implements Channel {
             messagePrefix.equals(that.messagePrefix()) &&
             toggleCommands.equals(that.commandNames()) &&
             channelPrefix.equals(that.channelPrefix()) &&
+            worlds.equals(that.worlds()) &&
             radius == that.radius();
     }
 }

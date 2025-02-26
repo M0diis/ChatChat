@@ -6,6 +6,7 @@ import at.helpch.chatchat.api.format.PriorityFormat;
 import at.helpch.chatchat.api.user.ChatUser;
 import at.helpch.chatchat.api.user.User;
 import at.helpch.chatchat.channel.ChannelTypeRegistryImpl;
+import at.helpch.chatchat.command.ChannelCommand;
 import at.helpch.chatchat.command.ChatToggleCommand;
 import at.helpch.chatchat.command.DumpCommand;
 import at.helpch.chatchat.command.FormatTestCommand;
@@ -13,6 +14,7 @@ import at.helpch.chatchat.command.IgnoreCommand;
 import at.helpch.chatchat.command.IgnoreListCommand;
 import at.helpch.chatchat.command.MainCommand;
 import at.helpch.chatchat.command.MentionToggleCommand;
+import at.helpch.chatchat.command.RangedCommand;
 import at.helpch.chatchat.command.ReloadCommand;
 import at.helpch.chatchat.command.ReplyCommand;
 import at.helpch.chatchat.command.SocialSpyCommand;
@@ -56,6 +58,12 @@ import java.util.stream.Collectors;
 @BukkitMain
 public final class ChatChatPlugin extends JavaPlugin {
 
+    private static ChatChatPlugin instance;
+
+    public static ChatChatPlugin getInstance() {
+        return instance;
+    }
+
     private @NotNull
     final ConfigManager configManager = new ConfigManager(this, this.getDataFolder().toPath());
     // We can move this inside onLoad or inside onEnable when we add different database types
@@ -76,6 +84,9 @@ public final class ChatChatPlugin extends JavaPlugin {
     private @NotNull
     final ChatChatAPIImpl api = new ChatChatAPIImpl(this);
 
+    public ChatChatPlugin() {
+        instance = this;
+    }
 
     private static BukkitAudiences audiences;
     private BukkitCommandManager<User> commandManager;
@@ -227,7 +238,7 @@ public final class ChatChatPlugin extends JavaPlugin {
                 .filter(sender::canSee)
                 .map(ChatUser::player)
                 .map(Player::getName)
-                .collect(Collectors.toUnmodifiableList())
+                .toList()
         );
         commandManager.registerSuggestion(SuggestionKey.of("files"), (sender, context) -> DumpUtils.FILES);
         commandManager.registerSuggestion(ChatUser.class, ((sender, context) -> Bukkit.getOnlinePlayers().stream()
@@ -274,7 +285,9 @@ public final class ChatChatPlugin extends JavaPlugin {
             new MentionToggleCommand(this),
             new FormatTestCommand(this),
             new DumpCommand(this),
-            new ChatToggleCommand(this)
+            new ChatToggleCommand(this),
+            new RangedCommand(this),
+            new ChannelCommand(this)
         ).forEach(commandManager::registerCommand);
 
         if (configManager.settings().privateMessagesSettings().enabled()) {

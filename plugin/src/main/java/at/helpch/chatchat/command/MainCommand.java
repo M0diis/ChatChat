@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MainCommand extends ChatChatCommand {
 
-    private static final JavaPlugin PLUGIN = JavaPlugin.getProvidingPlugin(ChatChatPlugin.class);
+    private static final JavaPlugin PLUGIN = ChatChatPlugin.getInstance();
     private static final Component TEXT = MessageUtils.parseToMiniMessage(
             "<aqua><click:open_url:'https://helpch.at'>A Chat Plugin <gray>by <#3dbbe4>Help<#f3af4b>Chat<br><gray>Version: <aqua>" + PLUGIN.getDescription().getVersion());
 

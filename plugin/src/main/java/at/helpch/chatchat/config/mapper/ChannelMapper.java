@@ -12,6 +12,7 @@ import org.spongepowered.configurate.serialize.TypeSerializer;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public final class ChannelMapper implements TypeSerializer<Channel> {
@@ -21,6 +22,7 @@ public final class ChannelMapper implements TypeSerializer<Channel> {
     private static final String CHANNEL_PREFIX = "channel-prefix";
     private static final String FORMATS = "formats";
     private static final String RADIUS = "radius";
+    private static final String WORLDS = "shared-worlds";
     private static final String TYPE = "type";
     private static final TypeToken<Map<String, PriorityFormat>> FORMATS_MAP_TYPE = new TypeToken<>() {};
 
@@ -54,6 +56,7 @@ public final class ChannelMapper implements TypeSerializer<Channel> {
         final var channelPrefix = node.node(CHANNEL_PREFIX).getString("");
         final var formatsMap = node.node(FORMATS).get(FORMATS_MAP_TYPE, Map.of());
         final var formats = new FormatsHolderImpl(formatsMap);
+        final var worlds = node.node(WORLDS).getList(String.class, List.of());
         final var radius = node.node(RADIUS).getInt(-1);
 
         final var channelType = node.node(TYPE).getString("default").toLowerCase();
@@ -63,7 +66,7 @@ public final class ChannelMapper implements TypeSerializer<Channel> {
             throw new SerializationException("Channel " + key + " has unknown channel type " + channelType + ", " +
                     "ignoring.");
         }
-        return builder.build(key, messagePrefix, commandName, channelPrefix, formats, radius);
+        return builder.build(key, messagePrefix, commandName, channelPrefix, formats, worlds, radius);
     }
 
     @Override
@@ -78,5 +81,6 @@ public final class ChannelMapper implements TypeSerializer<Channel> {
         target.node(CHANNEL_PREFIX).set(channel.channelPrefix());
         target.node(FORMATS).set(channel.formats().formats());
         target.node(RADIUS).set(channel.radius());
+        target.node(WORLDS).set(channel.worlds());
     }
 }
